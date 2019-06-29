@@ -1,0 +1,6 @@
+#visual code files
+.vscode
+
+#directories
+bin/
+obj/
