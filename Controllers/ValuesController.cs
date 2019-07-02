@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using ProAgil.WebAPI.Model;
+
+using  ProAgil.WebAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProAgil.WebAPI.Controllers
 {
@@ -10,18 +15,39 @@ namespace ProAgil.WebAPI.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        public DataContext _context {get;}
+        public ValuesController (DataContext context)
+        {
+            _context = context;
+        }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var results = await _context.Eventos.ToListAsync();
+                return Ok(results);
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de dados falhou");
+            }
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            try
+            {
+                var results = await _context.Eventos.FirstOrDefaultAsync( e => e.EventoId == id);
+                return Ok(results);
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de dados falhou");
+            }
         }
 
         // POST api/values
